@@ -1,0 +1,39 @@
+<h2>Styles<button id="refresh">↻</button></h2>
+<ul id="allStyles">
+
+</ul>
+<script>
+  const list = document.getElementById('allStyles');
+  const refresh = document.getElementById('refresh');
+
+  const selectStyles = (e) => {
+    if(e.target.dataset.styleid !== undefined) {
+    console.log("selected", e.target, e.target.dataset, e.target.dataset.styleid)
+    parent.postMessage({ pluginMessage: { type: 'selectNodes', data: e.target.dataset.styleid } }, '*')
+    }
+  }
+
+  const makeStyleItem = (style) => {
+    return `
+      <li data-styleId="${style.id}">
+        ${style.name} <span>${style.type}</span>
+      </li>
+    `
+  }
+
+  list.innerHTML = "Loading..."
+
+  list.addEventListener('click', (e) => {
+    selectStyles(e)
+  })
+
+  refresh.addEventListener('click', () => {
+    parent.postMessage({ pluginMessage: { type: 'refresh' } }, '*')
+  })
+
+  onmessage = (event) => {
+    const {styles} = event.data.pluginMessage
+    list.innerHTML = Object.values(styles).map(style => makeStyleItem(style)).join("")
+  }
+
+</script>
