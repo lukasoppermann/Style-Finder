@@ -1,0 +1,9 @@
+.ListItem {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8 8px;
+  border-bottom: 1px solid #ccc;
+  width: 100%;
+  box-sizing: border-box;
+}
