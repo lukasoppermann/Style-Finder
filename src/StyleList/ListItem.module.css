@@ -17,6 +17,11 @@
   & .label {
     cursor: default;
     user-select: none;
+    text-overflow: ellipsis;
+    width: 100%;
+    overflow:hidden;
+    white-space:nowrap;
+    z-index: 10;
   }
   &:hover::before {
     display: block;
@@ -39,6 +44,6 @@
   font-size: 11px;
   line-height: 100%;
   font-weight: 600;
-  margin-left: auto;
+  margin-left: 8px;
   margin-right: 6px;
 }

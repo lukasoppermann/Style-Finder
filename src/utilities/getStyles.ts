@@ -4,26 +4,14 @@ import { NodeWithStyle } from './hasStyle';
 const getStyleIds = (node: NodeWithStyle) =>
   [node.fillStyleId, node.effectStyleId, node.textStyleId, node.gridStyleId].filter(Boolean) as string[]
 
-type styleData = {
+export type styleData = {
   id: string,
   name: string,
   remote: boolean
-  type?: string,
+  type?: null | "PAINT" | "EFFECT" | "TEXT" | "GRID",
   description?: string,
   nodes?: NodeWithStyle[]
 }
-// return style data
-// const getStyleData = (style: BaseStyle): styleData => !style ? {
-//   id: style.id,
-//   name: "Broken style",
-//   remote: true
-// } : {
-//   id: style.id,
-//   name: style.name,
-//   type: style.type,
-//   description: style.description,
-//   remote: style.remote
-// }
 
 const getStyleData = async (figma: PluginAPI, styleId: string): Promise<styleData> => {
   // get style data from figma
@@ -51,7 +39,6 @@ export const getStyles = async (figma: PluginAPI): Promise<Record<string, styleD
   const styleData = [] as Promise<styleData>[]
   // get nodes with styles
   const nodes = getNodesWithStyles(figma.currentPage);
-  console.log("Nodes", nodes)
   for (const node of nodes) {
     // get ids for all styles that are set on a node
     const styleIds = getStyleIds(node);

@@ -1,3 +1,4 @@
+import { getSortedStyles } from './utilities/getSortedStyles';
 import { getStyles } from './utilities/getStyles';
 import { NodeWithStyle } from './utilities/hasStyle';
 
@@ -35,7 +36,7 @@ const runPlugin = async () => {
   figma.ui.resize(300, calcUiHeight(figma, Object.values(stylesById).length));
   //
   figma.ui.postMessage({
-    styles: Object.values(stylesById),
+    styles: getSortedStyles(stylesById),
     currentPage: figma.currentPage.name
   })
 
@@ -54,7 +55,7 @@ const runPlugin = async () => {
       stylesById = await getStyles(figma);
       figma.ui.resize(300, calcUiHeight(figma, Object.values(stylesById).length));
       figma.ui.postMessage({
-        styles: Object.values(stylesById),
+        styles: getSortedStyles(stylesById),
         currentPage: figma.currentPage.name
       })
     }

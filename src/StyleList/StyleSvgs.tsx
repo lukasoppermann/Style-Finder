@@ -30,6 +30,7 @@ const StyleSvg = ({
   type?: "EFFECT" | "PAINT" | "GRID" | "TEXT";
 }) => (
   <svg
+    className="icon"
     xmlns="http://www.w3.org/2000/svg"
     width="16"
     height="16"
