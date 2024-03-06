@@ -8,9 +8,10 @@ type Props = {
 
 const Header = ({ children, onRefresh }: Props) => {
   return (
-    <h2 className={styles.Header}>
-      {children} <button onClick={onRefresh}>↻</button>
-    </h2>
+    <header className={styles.Header}>
+      <h2>{children}</h2>
+      <button onClick={onRefresh}>↻</button>
+    </header>
   );
 };
 

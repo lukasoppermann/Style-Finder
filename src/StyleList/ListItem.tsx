@@ -10,7 +10,8 @@ type Props = {
 const ListItem = ({ style: { id, name, type, nodes, description } }: Props) => (
   <li className={styles.ListItem} data-style-id={id} title={description}>
     <StyleSvg type={type} />
-    {name} <span className={styles.ListItemCount}>{nodes.length}</span>
+    <span className={styles.label}>{name}</span>
+    <span className={styles.ListItemCount}>{nodes.length}</span>
   </li>
 );
 

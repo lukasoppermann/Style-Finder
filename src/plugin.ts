@@ -16,17 +16,27 @@ export type FigmaStyle = {
   nodes: NodeWithStyle[]
 }
 
-const calcUiHeight = (styleCount: number) => 50 + (styleCount * 36)
+
+const calcUiHeight = (figma: PluginAPI, styleCount: number): number => {
+  const height = 44 + ((styleCount || 1) * 40)
+  const maxHeight = parseInt(`${figma.viewport.bounds.height * figma.viewport.zoom}`) - 100
+  console.log("Height", height, "MaxHeight", maxHeight)
+  // return max height if height is greater than max height
+  if (height > maxHeight) return maxHeight
+  // otherwise return height
+  return height
+}
 
 const runPlugin = async () => {
   await figma.currentPage.loadAsync();
   // get all nodes in current page with styles
   let stylesById = await getStyles(figma);
   // resize ui
-  figma.ui.resize(300, calcUiHeight(Object.values(stylesById).length));
+  figma.ui.resize(300, calcUiHeight(figma, Object.values(stylesById).length));
   //
   figma.ui.postMessage({
-    styles: Object.values(stylesById)
+    styles: Object.values(stylesById),
+    currentPage: figma.currentPage.name
   })
 
   figma.ui.onmessage = async (msg: { type: string, data: string }) => {
@@ -42,9 +52,10 @@ const runPlugin = async () => {
 
     if (msg.type === 'refresh') {
       stylesById = await getStyles(figma);
-      figma.ui.resize(300, calcUiHeight(Object.values(stylesById).length));
+      figma.ui.resize(300, calcUiHeight(figma, Object.values(stylesById).length));
       figma.ui.postMessage({
-        styles: Object.values(stylesById)
+        styles: Object.values(stylesById),
+        currentPage: figma.currentPage.name
       })
     }
   }

@@ -10,67 +10,37 @@ const postMessage = (type: string, data?: unknown) => () => {
 };
 
 const App = () => {
-  const [figmaStyles, setFigmaStyles] = React.useState<FigmaStyle[]>();
+  const [figmaStyles, setFigmaStyles] = React.useState<FigmaStyle[]>(null);
+  const [currentPage, setCurrentPage] = React.useState<string>(null);
 
   React.useEffect(() => {
     onmessage = (event) => {
       const styles = event.data.pluginMessage.styles as FigmaStyle[];
+      const currentPage = event.data.pluginMessage.currentPage as string;
       setFigmaStyles(styles);
+      setCurrentPage(currentPage);
     };
   }, []);
 
   return (
     <main className={styles.app}>
-      <Header onRefresh={postMessage("refresh")}>Styles</Header>
-      {figmaStyles ? (
-        <StyleList styles={figmaStyles} postMessage={postMessage} />
+      <Header
+        onRefresh={() => {
+          setFigmaStyles(null);
+          postMessage("refresh")();
+        }}
+      >
+        {currentPage ? `Styles on ${currentPage}` : "Styles"}
+      </Header>
+      {figmaStyles === null ? (
+        <div className={styles.loading}>Loading...</div>
+      ) : figmaStyles.length === 0 ? (
+        <div className={styles.noStyles}>No styles on this page</div>
       ) : (
-        "Loading..."
+        <StyleList styles={figmaStyles} postMessage={postMessage} />
       )}
     </main>
   );
 };
 
 ReactDOM.createRoot(document.getElementById("react-page")).render(<App />);
-
-// {
-/* <h2>Styles<button id="refresh">↻</button></h2>
-<ul id="allStyles">
-
-</ul>
-<script>
-  const list = document.getElementById('allStyles');
-  const refresh = document.getElementById('refresh');
-
-  const selectStyles = (e) => {
-    if(e.target.dataset.styleid !== undefined) {
-    console.log("selected", e.target, e.target.dataset, e.target.dataset.styleid)
-    parent.postMessage({ pluginMessage: { type: 'selectNodes', data: e.target.dataset.styleid } }, '*')
-    }
-  }
-
-  const makeStyleItem = (style) => {
-    return `
-      <li data-styleId="${style.id}">
-        ${style.name} <span>${style.type}</span>
-      </li>
-    `
-  }
-
-  list.innerHTML = "Loading..."
-
-  list.addEventListener('click', (e) => {
-    selectStyles(e)
-  })
-
-  refresh.addEventListener('click', () => {
-    parent.postMessage({ pluginMessage: { type: 'refresh' } }, '*')
-  })
-
-  onmessage = (event) => {
-    const {styles} = event.data.pluginMessage
-    list.innerHTML = Object.values(styles).map(style => makeStyleItem(style)).join("")
-  }
-
-</script> */
-// }
