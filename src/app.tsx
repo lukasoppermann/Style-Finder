@@ -10,14 +10,25 @@ const postMessage = (type: string, data?: unknown) => () => {
 };
 
 const App = () => {
-  const [figmaStyles, setFigmaStyles] = React.useState<FigmaStyle[]>(null);
+  const [figmaLocalStyles, setFigmaLocalStyles] =
+    React.useState<FigmaStyle[]>(null);
+  const [figmaRemoteStyles, setFigmaRemoteStyles] =
+    React.useState<FigmaStyle[]>(null);
   const [currentPage, setCurrentPage] = React.useState<string>(null);
+  const [localStylesOpen, setLocalStylesOpen] = React.useState(true);
+  const [remoteStylesOpen, setRemoteStylesOpen] = React.useState(true);
 
   React.useEffect(() => {
     onmessage = (event) => {
-      const styles = event.data.pluginMessage.styles as FigmaStyle[];
+      // set local styles
+      const localStyles = event.data.pluginMessage.localStyles as FigmaStyle[];
+      setFigmaLocalStyles(localStyles);
+      // set remote styles
+      const remoteStyles = event.data.pluginMessage
+        .remoteStyles as FigmaStyle[];
+      setFigmaRemoteStyles(remoteStyles);
+      // set current Page
       const currentPage = event.data.pluginMessage.currentPage as string;
-      setFigmaStyles(styles);
       setCurrentPage(currentPage);
     };
   }, []);
@@ -26,18 +37,34 @@ const App = () => {
     <main className={styles.app}>
       <Header
         onRefresh={() => {
-          setFigmaStyles(null);
+          setFigmaLocalStyles(null);
+          setFigmaRemoteStyles(null);
           postMessage("refresh")();
         }}
       >
         {currentPage ? `Styles on ${currentPage}` : "Styles"}
       </Header>
-      {figmaStyles === null ? (
+      {figmaLocalStyles === null && figmaRemoteStyles === null ? (
         <div className={styles.loading}>Loading...</div>
-      ) : figmaStyles.length === 0 ? (
+      ) : figmaLocalStyles.length === 0 && figmaRemoteStyles.length === 0 ? (
         <div className={styles.noStyles}>No styles on this page</div>
       ) : (
-        <StyleList styles={figmaStyles} postMessage={postMessage} />
+        <>
+          <StyleList
+            styles={figmaLocalStyles}
+            title="Local styles"
+            postMessage={postMessage}
+            isOpen={localStylesOpen}
+            onToggle={() => setLocalStylesOpen(!localStylesOpen)}
+          />
+          <StyleList
+            styles={figmaRemoteStyles}
+            title="Remote styles"
+            postMessage={postMessage}
+            isOpen={remoteStylesOpen}
+            onToggle={() => setRemoteStylesOpen(!remoteStylesOpen)}
+          />
+        </>
       )}
     </main>
   );

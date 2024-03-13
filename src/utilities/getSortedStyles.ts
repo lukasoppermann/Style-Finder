@@ -7,11 +7,11 @@ const typeOrder = {
   "GRID": 4
 }
 
-export const getSortedStyles = (stylesById: Record<string, styleData>): styleData[] => {
-  const styles = Object.values(stylesById)
+export const getSortedStyles = (styles: styleData[]): styleData[] => {
   styles.sort((a, b) => {
-    if (typeOrder[a.type] < typeOrder[b.type]) return -1
-    if (typeOrder[a.type] > typeOrder[b.type]) return 1
+
+    if (a.type === undefined || b.type !== undefined && typeOrder[a.type] < typeOrder[b.type]) return -1
+    if (b.type === undefined || typeOrder[a.type] > typeOrder[b.type]) return 1
     return 0
   })
   return styles

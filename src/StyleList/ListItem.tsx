@@ -13,7 +13,9 @@ const ListItem = ({ style: { id, name, type, nodes, description } }: Props) => (
     data-style-id={id}
     title={`${name}${description ? ` — ${description}` : ""}`}
   >
-    <StyleSvg type={type} />
+    <div className={styles.icon}>
+      <StyleSvg type={type} />
+    </div>
     <span className={styles.label}>{name}</span>
     <span className={styles.ListItemCount}>{nodes.length}</span>
   </li>

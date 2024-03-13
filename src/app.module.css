@@ -5,16 +5,19 @@ body {
 }
 .app {
   font-family: "Inter", sans-serif;
+  color: var(--figma-color-text-primary);
 }
 .loading {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: calc(100vh - 48px);
   width: 100vw;
+  font-size: 13px;
+  color: var(--figma-color-text-secondary);
 }
 .noStyles {
   font-size: 13px;
   color: var(--figma-color-text-secondary);
-  padding: 8px 16px;
+  padding: 16px;
 }

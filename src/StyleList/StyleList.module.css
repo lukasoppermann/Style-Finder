@@ -1,4 +1,41 @@
 .StyleList {
-  margin: 0;
+  margin: 8px 0 0 0;
   padding: 0;
+  & summary {
+    cursor: default;
+    user-select: none;
+    position: relative;
+    color: var(--figma-color-text-secondary);
+    font-size: 11px;
+    font-weight: 500;
+    margin: 0 0 0 8px;
+    padding: 12px 8px 11px 16px;
+    list-style: none;
+    & .arrow {
+      position: absolute;
+      left: 6px;
+      top: 16px;
+      transform: rotate(-90deg);
+      transition: transform 0.2s ease;
+      fill: var(--figma-color-text-secondary);
+    }
+  }
+  &[open] summary {
+    & .arrow {
+      left: 6px;
+      top: 16px;
+      transform: rotate(0deg);
+    }
+  }
+  &[data-empty] summary {
+    color: var(--figma-color-text-disabled);
+    & .arrow {
+      fill: var(--figma-color-text-disabled);
+    }
+  }
+  .noStyles {
+    font-size: 11px;
+    color: var(--figma-color-text-disabled);
+    padding: 12px 8px 11px 16px;
+  }
 }

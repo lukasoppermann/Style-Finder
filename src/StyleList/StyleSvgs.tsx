@@ -24,17 +24,19 @@ const styleSvgs = {
   paint: `<path d="M11.5375 5.5107L8 2L4.4625 5.5107C3.4875 6.4805 3 7.77315 3 9.0154C3 10.2589 3.4875 11.5707 4.4625 12.5393C5.4375 13.5091 6.71875 14 8 14C9.28125 14 10.5625 13.5091 11.5375 12.5393C12.5125 11.5707 13 10.2589 13 9.0166C13 7.77315 12.5125 6.4805 11.5375 5.5119V5.5107ZM4.25 9.23985C4.25625 7.9964 4.6375 7.20784 5.35 6.5057L8 3.81476L10.65 6.53691C11.3625 7.23305 11.7438 7.9964 11.75 9.23985H4.25Z" />`,
 };
 
-const StyleSvg = ({
-  type,
-}: {
+type Props = {
   type?: "EFFECT" | "PAINT" | "GRID" | "TEXT";
-}) => (
+  className?: string;
+};
+
+const StyleSvg = ({ type }: Props) => (
   <svg
     className="icon"
     xmlns="http://www.w3.org/2000/svg"
     width="16"
     height="16"
     viewBox="0 0 16 16"
+    style={{ fill: "var(--figma-color-text-secondary)" }}
     dangerouslySetInnerHTML={{
       __html: styleSvgs[type?.toLowerCase() || "broken"],
     }}

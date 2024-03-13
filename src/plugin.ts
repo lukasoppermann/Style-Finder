@@ -11,17 +11,21 @@ figma.showUI(__html__, {
 export type FigmaStyle = {
   id: string
   name: string
-  type: null | "PAINT" | "EFFECT" | "TEXT" | "GRID"
+  type?: "PAINT" | "EFFECT" | "TEXT" | "GRID"
   description: string
   remote: string
   nodes: NodeWithStyle[]
 }
 
+const calcUiHeight = (figma: PluginAPI, localStyleCount: number, remoteStyleCount: number,): number => {
+  const headerHeight = 48
+  // no items
+  if (!localStyleCount && !remoteStyleCount) return headerHeight + 48
 
-const calcUiHeight = (figma: PluginAPI, styleCount: number): number => {
-  const height = 44 + ((styleCount || 1) * 40)
+  const listHeaderHeight = 36
+  const listMargin = 2 * 8
+  const height = headerHeight + 2 * listHeaderHeight + listMargin + (localStyleCount ? localStyleCount * 40 : 40) + (remoteStyleCount ? remoteStyleCount * 40 : 40)
   const maxHeight = parseInt(`${figma.viewport.bounds.height * figma.viewport.zoom}`) - 100
-  console.log("Height", height, "MaxHeight", maxHeight)
   // return max height if height is greater than max height
   if (height > maxHeight) return maxHeight
   // otherwise return height
@@ -29,14 +33,17 @@ const calcUiHeight = (figma: PluginAPI, styleCount: number): number => {
 }
 
 const runPlugin = async () => {
-  await figma.currentPage.loadAsync();
-  // get all nodes in current page with styles
+  // await figma.currentPage.loadAsync();
+  // get all nodes in current page with style
   let stylesById = await getStyles(figma);
+  let remoteStyles = getSortedStyles(Object.values(stylesById).filter(style => style.remote))
+  let localStyles = getSortedStyles(Object.values(stylesById).filter(style => !style.remote))
   // resize ui
-  figma.ui.resize(300, calcUiHeight(figma, Object.values(stylesById).length));
+  figma.ui.resize(300, calcUiHeight(figma, localStyles.length, remoteStyles.length));
   //
   figma.ui.postMessage({
-    styles: getSortedStyles(stylesById),
+    remoteStyles,
+    localStyles,
     currentPage: figma.currentPage.name
   })
 
@@ -45,7 +52,6 @@ const runPlugin = async () => {
     // your HTML page is to use an object with a "type" property like this.
     if (msg.type === 'selectNodes') {
       const styleId = msg.data
-      // @ts-ignore
       figma.currentPage.selection = stylesById[styleId].nodes;
       figma.viewport.scrollAndZoomIntoView(stylesById[styleId].nodes);
       figma.notify(`Selected ${stylesById[styleId].nodes.length} nodes with style "${stylesById[styleId].name}"`)
@@ -53,9 +59,12 @@ const runPlugin = async () => {
 
     if (msg.type === 'refresh') {
       stylesById = await getStyles(figma);
-      figma.ui.resize(300, calcUiHeight(figma, Object.values(stylesById).length));
+      remoteStyles = getSortedStyles(Object.values(stylesById).filter(style => style.remote))
+      localStyles = getSortedStyles(Object.values(stylesById).filter(style => !style.remote))
+      figma.ui.resize(300, calcUiHeight(figma, localStyles.length, remoteStyles.length));
       figma.ui.postMessage({
-        styles: getSortedStyles(stylesById),
+        remoteStyles,
+        localStyles,
         currentPage: figma.currentPage.name
       })
     }
@@ -63,3 +72,7 @@ const runPlugin = async () => {
 }
 
 runPlugin()
+
+figma.on('currentpagechange', () => {
+  runPlugin()
+})
