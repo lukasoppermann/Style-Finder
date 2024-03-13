@@ -1,7 +1,7 @@
 {
-  "name": "Find-Style",
+  "name": "Style-Finder",
   "version": "1.0.0",
-  "description": "Your Figma Plugin",
+  "description": "A plugin to find all styles, including from hidden layers on the current page and select the nodes.",
   "main": "dist/plugin.js",
   "scripts": {
     "build": "webpack",

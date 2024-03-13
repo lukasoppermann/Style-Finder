@@ -49,7 +49,7 @@ export const getStyles = async (figma: PluginAPI, page: PageNode | DocumentNode 
     //
     for (const styleId of styleIds) {
       if (!styleById[styleId]) {
-        // @ts-ignore
+        // @ts-expect-error: not all properties are set
         styleById[styleId] = {
           id: styleId,
           nodes: []
@@ -62,7 +62,6 @@ export const getStyles = async (figma: PluginAPI, page: PageNode | DocumentNode 
   }
   // await style data
   await Promise.all(styleData).then((data) => data
-    // @ts-ignore
     .map(style => {
       styleById[style.id] = {
         ...style,

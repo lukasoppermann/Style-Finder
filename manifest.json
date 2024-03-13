@@ -1,5 +1,5 @@
 {
-  "name": "Find Style",
+  "name": "Style Finder",
   "id": "1346464637134829332",
   "api": "1.0.0",
   "main": "dist/plugin.js",
