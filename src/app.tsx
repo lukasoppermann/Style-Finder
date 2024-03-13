@@ -56,6 +56,7 @@ const App = () => {
             postMessage={postMessage}
             isOpen={localStylesOpen}
             onToggle={() => setLocalStylesOpen(!localStylesOpen)}
+            noStylesMessage="No local styles on this page"
           />
           <StyleList
             styles={figmaRemoteStyles}
@@ -63,6 +64,7 @@ const App = () => {
             postMessage={postMessage}
             isOpen={remoteStylesOpen}
             onToggle={() => setRemoteStylesOpen(!remoteStylesOpen)}
+            noStylesMessage="No remote styles on this page"
           />
         </>
       )}

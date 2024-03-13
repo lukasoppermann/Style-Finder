@@ -7,6 +7,7 @@ type Props = {
   styles?: FigmaStyle[];
   title: string;
   isOpen?: boolean;
+  noStylesMessage?: string;
   onToggle?: () => void;
   postMessage: (type: string, data?: unknown) => () => void;
 };
@@ -15,6 +16,7 @@ const StyleList = ({
   styles: figmaStyles = [],
   title,
   isOpen = true,
+  noStylesMessage = "No styles on this page",
   onToggle: onToggleHandler,
   postMessage,
 }: Props) => {
@@ -57,7 +59,7 @@ const StyleList = ({
       {figmaStyles.length > 0 ? (
         figmaStyles.map((style) => <ListItem key={style.id} style={style} />)
       ) : (
-        <div className={styles.noStyles}>No styles on this page</div>
+        <div className={styles.noStyles}>{noStylesMessage}</div>
       )}
     </details>
   );
