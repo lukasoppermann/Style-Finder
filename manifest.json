@@ -1,6 +1,6 @@
 {
   "name": "Style Finder",
-  "id": "1346464637134829332",
+  "id": "1349809560890518773",
   "api": "1.0.0",
   "main": "dist/plugin.js",
   "ui": "dist/app.html",
