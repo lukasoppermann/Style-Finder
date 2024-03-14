@@ -1,6 +1,8 @@
 import { getSortedStyles } from './utilities/getSortedStyles';
 import { getStyles } from './utilities/getStyles';
 import { NodeWithStyle } from './utilities/hasStyle';
+import { SettingKey, defaultSettings, setSetting } from './utilities/settings';
+import { getFromStore } from './utilities/store';
 
 figma.showUI(__html__, {
   width: 300,
@@ -19,12 +21,13 @@ export type FigmaStyle = {
 
 const calcUiHeight = (figma: PluginAPI, localStyleCount: number, remoteStyleCount: number,): number => {
   const headerHeight = 48
+  const footerHeight = 40
   // no items
-  if (!localStyleCount && !remoteStyleCount) return headerHeight + 48
+  if (!localStyleCount && !remoteStyleCount) return headerHeight + footerHeight + 48
 
   const listHeaderHeight = 36
   const listMargin = 2 * 8
-  const height = headerHeight + 2 * listHeaderHeight + listMargin + (localStyleCount ? localStyleCount * 40 : 40) + (remoteStyleCount ? remoteStyleCount * 40 : 40)
+  const height = headerHeight + footerHeight + 2 * listHeaderHeight + listMargin + (localStyleCount ? localStyleCount * 40 : 40) + (remoteStyleCount ? remoteStyleCount * 40 : 40)
   const maxHeight = parseInt(`${figma.viewport.bounds.height * figma.viewport.zoom}`) - 100
   // return max height if height is greater than max height
   if (height > maxHeight) return maxHeight
@@ -33,6 +36,8 @@ const calcUiHeight = (figma: PluginAPI, localStyleCount: number, remoteStyleCoun
 }
 
 const runPlugin = async () => {
+  // get settings
+  let settings = getFromStore(figma, 'SETTINGS') || defaultSettings
   // await figma.currentPage.loadAsync();
   // get all nodes in current page with style
   let stylesById = await getStyles(figma);
@@ -44,17 +49,34 @@ const runPlugin = async () => {
   figma.ui.postMessage({
     remoteStyles,
     localStyles,
+    settings,
     currentPage: figma.currentPage.name
   })
 
-  figma.ui.onmessage = async (msg: { type: string, data: string }) => {
+  figma.ui.onmessage = async (msg: { type: string, data: unknown }) => {
     // One way of distinguishing between different types of messages sent from
     // your HTML page is to use an object with a "type" property like this.
     if (msg.type === 'selectNodes') {
-      const styleId = msg.data
+      const styleId = msg.data as string
       figma.currentPage.selection = stylesById[styleId].nodes;
       figma.viewport.scrollAndZoomIntoView(stylesById[styleId].nodes);
       figma.notify(`Selected ${stylesById[styleId].nodes.length} nodes with style "${stylesById[styleId].name}"`)
+    }
+    // store settings
+    if (msg.type === 'storeSettings') {
+      const data = msg.data as Record<SettingKey, string | boolean>
+      for (const key in data) {
+        setSetting(figma, key as SettingKey, data[key])
+      }
+      // update settings
+      settings = getFromStore(figma, 'SETTINGS') || defaultSettings
+      // refresh ui
+      figma.ui.postMessage({
+        remoteStyles,
+        localStyles,
+        settings,
+        currentPage: figma.currentPage.name
+      })
     }
 
     if (msg.type === 'refresh') {
@@ -65,6 +87,7 @@ const runPlugin = async () => {
       figma.ui.postMessage({
         remoteStyles,
         localStyles,
+        settings,
         currentPage: figma.currentPage.name
       })
     }

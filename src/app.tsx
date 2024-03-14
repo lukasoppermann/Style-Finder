@@ -4,6 +4,8 @@ import styles from "./app.module.css";
 import Header from "./Header";
 import StyleList from "./StyleList";
 import { FigmaStyle } from "./plugin";
+import Footer from "./Footer/Footer";
+import { Settings, defaultSettings, SettingKey } from "./utilities/settings";
 
 const postMessage = (type: string, data?: unknown) => () => {
   parent.postMessage({ pluginMessage: { type, data } }, "*");
@@ -15,8 +17,7 @@ const App = () => {
   const [figmaRemoteStyles, setFigmaRemoteStyles] =
     React.useState<FigmaStyle[]>(null);
   const [currentPage, setCurrentPage] = React.useState<string>(null);
-  const [localStylesOpen, setLocalStylesOpen] = React.useState(true);
-  const [remoteStylesOpen, setRemoteStylesOpen] = React.useState(true);
+  const [settings, setSettings] = React.useState<Settings>(defaultSettings);
 
   React.useEffect(() => {
     onmessage = (event) => {
@@ -30,6 +31,9 @@ const App = () => {
       // set current Page
       const currentPage = event.data.pluginMessage.currentPage as string;
       setCurrentPage(currentPage);
+      // set settings
+      const storedSettings = event.data.pluginMessage.settings as Settings;
+      setSettings(storedSettings);
     };
   }, []);
 
@@ -54,20 +58,26 @@ const App = () => {
             styles={figmaLocalStyles}
             title="Local styles"
             postMessage={postMessage}
-            isOpen={localStylesOpen}
-            onToggle={() => setLocalStylesOpen(!localStylesOpen)}
+            isOpen={settings.LOCAL_STYLES_OPEN}
+            onToggle={postMessage("storeSettings", {
+              ["LOCAL_STYLES_OPEN" as SettingKey]: !settings.LOCAL_STYLES_OPEN,
+            })}
             noStylesMessage="No local styles on this page"
           />
           <StyleList
             styles={figmaRemoteStyles}
             title="Remote styles"
             postMessage={postMessage}
-            isOpen={remoteStylesOpen}
-            onToggle={() => setRemoteStylesOpen(!remoteStylesOpen)}
+            isOpen={settings.REMOTE_STYLES_OPEN}
+            onToggle={postMessage("storeSettings", {
+              ["REMOTE_STYLES_OPEN" as SettingKey]:
+                !settings.REMOTE_STYLES_OPEN,
+            })}
             noStylesMessage="No remote styles on this page"
           />
         </>
       )}
+      <Footer />
     </main>
   );
 };

@@ -27,11 +27,6 @@ const StyleList = ({
     if (styleId === undefined) return;
     postMessage("selectNodes", styleId)();
   };
-  // details toggle
-  detailsRef.current?.addEventListener("toggle", () => {
-    console.log("toggle");
-    onToggleHandler();
-  });
   // return list
   return (
     <details
@@ -43,7 +38,7 @@ const StyleList = ({
       {...(figmaStyles.length === 0 ? { "data-empty": true } : {})}
     >
       {title && (
-        <summary>
+        <summary onClick={onToggleHandler}>
           <svg
             className={styles.arrow}
             xmlns="http://www.w3.org/2000/svg"
