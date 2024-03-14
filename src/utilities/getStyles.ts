@@ -1,5 +1,6 @@
 import { getNodesWithStyles } from './getNodesWithStyles';
 import { NodeWithStyle } from './hasStyle';
+import { Settings } from './settings';
 
 const getStyleIds = (node: NodeWithStyle) =>
   [node.fillStyleId, node.effectStyleId, node.textStyleId, node.gridStyleId].filter((id) => id && typeof id === "string") as string[]
@@ -38,11 +39,11 @@ const getStyleData = async (figma: PluginAPI, styleId: string): Promise<styleDat
 }
 
 
-export const getStyles = async (figma: PluginAPI, page: PageNode | DocumentNode = figma.currentPage): Promise<Record<string, styleData>> => {
+export const getStyles = async (figma: PluginAPI, settings: Settings, page: PageNode | DocumentNode = figma.currentPage): Promise<Record<string, styleData>> => {
   const styleById = {} as Record<string, styleData>;
   const styleData = [] as Promise<styleData>[]
   // get nodes with styles
-  const nodes = getNodesWithStyles(page);
+  const nodes = getNodesWithStyles(page, settings);
   for (const node of nodes) {
     // get ids for all styles that are set on a node
     const styleIds = getStyleIds(node);

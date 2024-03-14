@@ -36,7 +36,7 @@ const StyleSvg = ({ type }: Props) => (
     width="16"
     height="16"
     viewBox="0 0 16 16"
-    style={{ fill: "var(--figma-color-text-secondary)" }}
+    style={{ fill: "currentColor" }}
     dangerouslySetInnerHTML={{
       __html: styleSvgs[type?.toLowerCase() || "broken"],
     }}

@@ -1,6 +1,7 @@
 import { NodeWithStyle, hasEffectStyle, hasFillStyle, hasGridStyle, hasTextStyle } from './hasStyle';
+import { Settings } from './settings';
 
-export const getNodesWithStyles = (parent: PageNode | DocumentNode): NodeWithStyle[] => parent.findAllWithCriteria({
+export const getNodesWithStyles = (parent: PageNode | DocumentNode, settings: Settings): NodeWithStyle[] => parent.findAllWithCriteria({
   types: ["BOOLEAN_OPERATION",
     "COMPONENT",
     "COMPONENT_SET",
@@ -17,4 +18,4 @@ export const getNodesWithStyles = (parent: PageNode | DocumentNode): NodeWithSty
     "TEXT",
     "VECTOR",]
 })
-  .filter(n => hasFillStyle(n) || hasEffectStyle(n) || hasTextStyle(n) || hasGridStyle(n)) as NodeWithStyle[];
+  .filter(n => (settings.SHOW_PAINT && hasFillStyle(n)) || (settings.SHOW_EFFECT && hasEffectStyle(n)) || (settings.SHOW_TEXT && hasTextStyle(n)) || (settings.SHOW_GRID && hasGridStyle(n))) as NodeWithStyle[];
