@@ -4,6 +4,7 @@
   left: 0;
   z-index: 100;
   width: calc(100% - 8px);
+  height: 32px;
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -15,7 +16,7 @@
     font-size: 12px;
     margin: 0;
   }
-  & > button {
+  & button {
     font-size: 16px;
     line-height: 16px;
     width: 32px;
@@ -23,10 +24,19 @@
     border-radius: 1px;
     border: none;
     background-color: transparent;
-    color: var(--figma-color-text-secondary);
+    color: var(--figma-color-text-disabled);
+    &[data-enabled] {
+      color: var(--figma-color-text-primary);
+    }
     &:hover {
       color: var(--figma-color-text-primary);
       background-color: rgba(0,0,0,0.05);
     }
+    svg {
+      fill: currentColor;
+    }
+  }
+  .FooterRightItems {
+    margin-right: auto;
   }
 }

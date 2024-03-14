@@ -37,6 +37,7 @@
     border-radius: 1px;
   }
   & .icon {
+    color: var(--figma-color-text-secondary);
     width: 16px;
     height: 16px;
   }

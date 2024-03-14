@@ -37,10 +37,13 @@ const calcUiHeight = (figma: PluginAPI, localStyleCount: number, remoteStyleCoun
 
 const runPlugin = async () => {
   // get settings
-  let settings = getFromStore(figma, 'SETTINGS') || defaultSettings
+  let settings = {
+    ...defaultSettings,
+    ...getFromStore(figma, 'SETTINGS')
+  }
   // await figma.currentPage.loadAsync();
   // get all nodes in current page with style
-  let stylesById = await getStyles(figma);
+  let stylesById = await getStyles(figma, settings);
   let remoteStyles = getSortedStyles(Object.values(stylesById).filter(style => style.remote))
   let localStyles = getSortedStyles(Object.values(stylesById).filter(style => !style.remote))
   // resize ui
@@ -64,12 +67,24 @@ const runPlugin = async () => {
     }
     // store settings
     if (msg.type === 'storeSettings') {
+      const refreshOnUpdate: SettingKey[] = ["SHOW_EFFECT", "SHOW_GRID", "SHOW_PAINT", "SHOW_TEXT"]
       const data = msg.data as Record<SettingKey, string | boolean>
       for (const key in data) {
         setSetting(figma, key as SettingKey, data[key])
       }
       // update settings
-      settings = getFromStore(figma, 'SETTINGS') || defaultSettings
+      settings = {
+        ...defaultSettings,
+        ...getFromStore(figma, 'SETTINGS')
+      }
+
+      if (Object.keys(msg.data).some((key: SettingKey) => refreshOnUpdate.includes(key))) {
+        stylesById = await getStyles(figma, settings);
+        remoteStyles = getSortedStyles(Object.values(stylesById).filter(style => style.remote))
+        localStyles = getSortedStyles(Object.values(stylesById).filter(style => !style.remote))
+        figma.ui.resize(300, calcUiHeight(figma, localStyles.length, remoteStyles.length));
+      }
+
       // refresh ui
       figma.ui.postMessage({
         remoteStyles,
@@ -80,7 +95,7 @@ const runPlugin = async () => {
     }
 
     if (msg.type === 'refresh') {
-      stylesById = await getStyles(figma);
+      stylesById = await getStyles(figma, settings);
       remoteStyles = getSortedStyles(Object.values(stylesById).filter(style => style.remote))
       localStyles = getSortedStyles(Object.values(stylesById).filter(style => !style.remote))
       figma.ui.resize(300, calcUiHeight(figma, localStyles.length, remoteStyles.length));

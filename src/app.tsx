@@ -77,7 +77,7 @@ const App = () => {
           />
         </>
       )}
-      <Footer />
+      <Footer settings={settings} />
     </main>
   );
 };
