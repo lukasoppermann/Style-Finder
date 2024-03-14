@@ -4,7 +4,7 @@ import styles from "./app.module.css";
 import Header from "./Header";
 import StyleList from "./StyleList";
 import { FigmaStyle } from "./plugin";
-import Footer from "./Footer/Footer";
+import Footer from "./Footer";
 import { Settings, defaultSettings, SettingKey } from "./utilities/settings";
 
 const postMessage = (type: string, data?: unknown) => () => {
@@ -12,15 +12,24 @@ const postMessage = (type: string, data?: unknown) => () => {
 };
 
 const App = () => {
-  const [figmaLocalStyles, setFigmaLocalStyles] =
-    React.useState<FigmaStyle[]>(null);
-  const [figmaRemoteStyles, setFigmaRemoteStyles] =
-    React.useState<FigmaStyle[]>(null);
+  const [figmaLocalStyles, setFigmaLocalStyles] = React.useState<FigmaStyle[]>(
+    []
+  );
+  const [figmaRemoteStyles, setFigmaRemoteStyles] = React.useState<
+    FigmaStyle[]
+  >([]);
   const [currentPage, setCurrentPage] = React.useState<string>(null);
   const [settings, setSettings] = React.useState<Settings>(defaultSettings);
+  const [loading, setLoading] = React.useState<boolean>(true);
 
   React.useEffect(() => {
     onmessage = (event) => {
+      console.log("event", event.data.pluginMessage);
+
+      if (event.data.pluginMessage.loading === true) {
+        setLoading(true);
+        return;
+      }
       // set local styles
       const localStyles = event.data.pluginMessage.localStyles as FigmaStyle[];
       setFigmaLocalStyles(localStyles);
@@ -34,6 +43,8 @@ const App = () => {
       // set settings
       const storedSettings = event.data.pluginMessage.settings as Settings;
       setSettings(storedSettings);
+      //
+      setLoading(false);
     };
   }, []);
 
@@ -46,9 +57,9 @@ const App = () => {
           postMessage("refresh")();
         }}
       >
-        {currentPage ? `Styles on ${currentPage}` : "Styles"}
+        {currentPage ? `Styles on ${currentPage}` : "Loading..."}
       </Header>
-      {figmaLocalStyles === null && figmaRemoteStyles === null ? (
+      {loading ? (
         <div className={styles.loading}>Loading...</div>
       ) : figmaLocalStyles.length === 0 && figmaRemoteStyles.length === 0 ? (
         <div className={styles.noStyles}>No styles on this page</div>

@@ -41,6 +41,10 @@ const runPlugin = async () => {
     ...defaultSettings,
     ...getFromStore(figma, 'SETTINGS')
   }
+  figma.ui.postMessage({
+    settings,
+    loading: true,
+  })
   // await figma.currentPage.loadAsync();
   // get all nodes in current page with style
   let stylesById = await getStyles(figma, settings);
@@ -53,7 +57,8 @@ const runPlugin = async () => {
     remoteStyles,
     localStyles,
     settings,
-    currentPage: figma.currentPage.name
+    currentPage: figma.currentPage.name,
+    loading: false,
   })
 
   figma.ui.onmessage = async (msg: { type: string, data: unknown }) => {
@@ -90,7 +95,8 @@ const runPlugin = async () => {
         remoteStyles,
         localStyles,
         settings,
-        currentPage: figma.currentPage.name
+        currentPage: figma.currentPage.name,
+        loading: false,
       })
     }
 
@@ -103,7 +109,8 @@ const runPlugin = async () => {
         remoteStyles,
         localStyles,
         settings,
-        currentPage: figma.currentPage.name
+        currentPage: figma.currentPage.name,
+        loading: false,
       })
     }
   }
