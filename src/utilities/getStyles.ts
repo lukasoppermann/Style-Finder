@@ -2,21 +2,21 @@ import { getNodesWithStyles } from './getNodesWithStyles';
 import { NodeWithStyle } from './hasStyle';
 import { Settings } from './settings';
 
-const getRangeStyleIds = (node: NodeWithStyle) => {
+const getRangeStyleIds = (node: NodeWithStyle, settings: Settings) => {
   if (node.type === "TEXT") {
-    return node.getStyledTextSegments(["textStyleId", "fillStyleId"]).flatMap(segment => [segment.fillStyleId, segment.textStyleId])
+    return node.getStyledTextSegments(["textStyleId", "fillStyleId"]).flatMap(segment => [(settings.SHOW_PAINT ? segment.fillStyleId : undefined), (settings.SHOW_TEXT ? segment.textStyleId : undefined)])
   }
   return []
 }
 
-const getStyleIds = (node: NodeWithStyle) =>
+const getStyleIds = (node: NodeWithStyle, settings: Settings) =>
   [
-    node.fillStyleId,
-    node.effectStyleId,
-    node.textStyleId,
-    node.gridStyleId,
-    node.strokeStyleId,
-    ...getRangeStyleIds(node)
+    (settings.SHOW_PAINT ? node.fillStyleId : undefined),
+    (settings.SHOW_PAINT ? node.strokeStyleId : undefined),
+    (settings.SHOW_EFFECT ? node.effectStyleId : undefined),
+    (settings.SHOW_TEXT ? node.textStyleId : undefined),
+    (settings.SHOW_GRID ? node.gridStyleId : undefined),
+    ...getRangeStyleIds(node, settings)
   ].filter((id) => id && typeof id === "string") as string[]
 
 export type styleData = {
@@ -61,7 +61,7 @@ export const getStyles = async (figma: PluginAPI, settings: Settings, page: Page
 
   for (const node of nodes) {
     // get ids for all styles that are set on a node
-    const styleIds = getStyleIds(node);
+    const styleIds = getStyleIds(node, settings);
     //
     for (const styleId of styleIds) {
       if (!styleById[styleId]) {
