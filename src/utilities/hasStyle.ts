@@ -3,6 +3,7 @@ export type NodeWithStyle = SceneNode & {
   effectStyleId: string
   textStyleId: string
   gridStyleId: string
+  strokeStyleId: string
 };
 
 export const hasFillStyle = (node: SceneNode): node is NodeWithStyle => {
@@ -19,4 +20,8 @@ export const hasTextStyle = (node: SceneNode): node is NodeWithStyle => {
 
 export const hasGridStyle = (node: SceneNode): node is NodeWithStyle => {
   return "gridStyleId" in node && typeof node.gridStyleId === "string" && node.gridStyleId !== ""
+}
+
+export const hasStrokeStyle = (node: SceneNode): node is NodeWithStyle => {
+  return "strokeStyleId" in node && typeof node.strokeStyleId === "string" && node.strokeStyleId !== ""
 }
