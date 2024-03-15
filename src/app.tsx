@@ -34,6 +34,7 @@ const App = () => {
       const storedSettings = event.data.pluginMessage.settings as Settings;
       setSettings(storedSettings);
     };
+    postMessage("refresh")();
   }, []);
 
   return (

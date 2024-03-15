@@ -53,7 +53,7 @@ const reloadUi = async (figma: PluginAPI, stylesById?: Record<string, styleData>
 const runPlugin = async () => {
   // await figma.currentPage.loadAsync();
   // get all nodes in current page with style
-  let stylesById = await reloadUi(figma)
+  let stylesById
 
   figma.ui.onmessage = async (msg: { type: string, data: unknown }) => {
     // One way of distinguishing between different types of messages sent from

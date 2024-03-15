@@ -3,7 +3,7 @@ import { NodeWithStyle } from './hasStyle';
 import { Settings } from './settings';
 
 const getStyleIds = (node: NodeWithStyle) =>
-  [node.fillStyleId, node.effectStyleId, node.textStyleId, node.gridStyleId].filter((id) => id && typeof id === "string") as string[]
+  [node.fillStyleId, node.effectStyleId, node.textStyleId, node.gridStyleId, node.strokeStyleId].filter((id) => id && typeof id === "string") as string[]
 
 export type styleData = {
   id: string,
