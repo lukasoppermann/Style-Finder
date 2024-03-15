@@ -2,8 +2,22 @@ import { getNodesWithStyles } from './getNodesWithStyles';
 import { NodeWithStyle } from './hasStyle';
 import { Settings } from './settings';
 
+const getRangeStyleIds = (node: NodeWithStyle) => {
+  if (node.type === "TEXT") {
+    return node.getStyledTextSegments(["textStyleId", "fillStyleId"]).flatMap(segment => [segment.fillStyleId, segment.textStyleId])
+  }
+  return []
+}
+
 const getStyleIds = (node: NodeWithStyle) =>
-  [node.fillStyleId, node.effectStyleId, node.textStyleId, node.gridStyleId, node.strokeStyleId].filter((id) => id && typeof id === "string") as string[]
+  [
+    node.fillStyleId,
+    node.effectStyleId,
+    node.textStyleId,
+    node.gridStyleId,
+    node.strokeStyleId,
+    ...getRangeStyleIds(node)
+  ].filter((id) => id && typeof id === "string") as string[]
 
 export type styleData = {
   id: string,
