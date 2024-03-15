@@ -1,10 +1,10 @@
 import * as React from "react";
 import styles from "./StyleList.module.css";
 import ListItem from "./ListItem";
-import { FigmaStyle } from "../plugin";
+import { styleData } from "../utilities/getStyles";
 
 type Props = {
-  styles?: FigmaStyle[];
+  styles?: styleData[];
   title: string;
   isOpen?: boolean;
   noStylesMessage?: string;

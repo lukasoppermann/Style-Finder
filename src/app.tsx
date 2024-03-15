@@ -3,9 +3,9 @@ import * as ReactDOM from "react-dom/client";
 import styles from "./app.module.css";
 import Header from "./Header";
 import StyleList from "./StyleList";
-import { FigmaStyle } from "./plugin";
 import Footer from "./Footer/Footer";
 import { Settings, defaultSettings, SettingKey } from "./utilities/settings";
+import { styleData } from "./utilities/getStyles";
 
 const postMessage = (type: string, data?: unknown) => () => {
   parent.postMessage({ pluginMessage: { type, data } }, "*");
@@ -13,20 +13,19 @@ const postMessage = (type: string, data?: unknown) => () => {
 
 const App = () => {
   const [figmaLocalStyles, setFigmaLocalStyles] =
-    React.useState<FigmaStyle[]>(null);
+    React.useState<styleData[]>(null);
   const [figmaRemoteStyles, setFigmaRemoteStyles] =
-    React.useState<FigmaStyle[]>(null);
+    React.useState<styleData[]>(null);
   const [currentPage, setCurrentPage] = React.useState<string>(null);
   const [settings, setSettings] = React.useState<Settings>(defaultSettings);
 
   React.useEffect(() => {
     onmessage = (event) => {
       // set local styles
-      const localStyles = event.data.pluginMessage.localStyles as FigmaStyle[];
+      const localStyles = event.data.pluginMessage.localStyles as styleData[];
       setFigmaLocalStyles(localStyles);
       // set remote styles
-      const remoteStyles = event.data.pluginMessage
-        .remoteStyles as FigmaStyle[];
+      const remoteStyles = event.data.pluginMessage.remoteStyles as styleData[];
       setFigmaRemoteStyles(remoteStyles);
       // set current Page
       const currentPage = event.data.pluginMessage.currentPage as string;

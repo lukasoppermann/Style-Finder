@@ -8,9 +8,9 @@ const getStyleIds = (node: NodeWithStyle) =>
 export type styleData = {
   id: string,
   name: string,
-  remote: boolean
   type?: "PAINT" | "EFFECT" | "TEXT" | "GRID",
   description?: string,
+  remote: boolean
   nodes?: NodeWithStyle[]
 }
 
