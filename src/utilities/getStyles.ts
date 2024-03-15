@@ -57,10 +57,7 @@ export const getStyles = async (figma: PluginAPI, settings: Settings, page: Page
   const styleById = {} as Record<string, styleData>;
   const styleData = [] as Promise<styleData>[]
   // get nodes with styles
-  const start = Date.now()
   const nodes = getNodesWithStyles(page, settings);
-  const end = Date.now()
-  console.log('time:', end - start, 'ms')
 
   for (const node of nodes) {
     // get ids for all styles that are set on a node
