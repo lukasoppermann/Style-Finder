@@ -1,6 +1,5 @@
 import { getSortedStyles } from './utilities/getSortedStyles';
-import { getStyles } from './utilities/getStyles';
-import { NodeWithStyle } from './utilities/hasStyle';
+import { getStyles, styleData } from './utilities/getStyles';
 import { SettingKey, defaultSettings, setSetting } from './utilities/settings';
 import { getFromStore } from './utilities/store';
 
@@ -9,15 +8,6 @@ figma.showUI(__html__, {
   height: 400,
   themeColors: true
 });
-
-export type FigmaStyle = {
-  id: string
-  name: string
-  type?: "PAINT" | "EFFECT" | "TEXT" | "GRID"
-  description: string
-  remote: string
-  nodes: NodeWithStyle[]
-}
 
 const calcUiHeight = (figma: PluginAPI, localStyleCount: number, remoteStyleCount: number,): number => {
   const headerHeight = 48
@@ -35,26 +25,35 @@ const calcUiHeight = (figma: PluginAPI, localStyleCount: number, remoteStyleCoun
   return height
 }
 
-const runPlugin = async () => {
+const reloadUi = async (figma: PluginAPI, stylesById?: Record<string, styleData>) => {
   // get settings
-  let settings = {
+  const settings = {
     ...defaultSettings,
     ...getFromStore(figma, 'SETTINGS')
   }
-  // await figma.currentPage.loadAsync();
-  // get all nodes in current page with style
-  let stylesById = await getStyles(figma, settings);
-  let remoteStyles = getSortedStyles(Object.values(stylesById).filter(style => style.remote))
-  let localStyles = getSortedStyles(Object.values(stylesById).filter(style => !style.remote))
+  // fetch nodes and styles if not provided
+  if (!stylesById) {
+    stylesById = await getStyles(figma, settings);
+  }
+  const remoteStyles = getSortedStyles(Object.values(stylesById).filter(style => style.remote))
+  const localStyles = getSortedStyles(Object.values(stylesById).filter(style => !style.remote))
   // resize ui
   figma.ui.resize(300, calcUiHeight(figma, localStyles.length, remoteStyles.length));
-  //
+  // post data to UI
   figma.ui.postMessage({
     remoteStyles,
     localStyles,
     settings,
     currentPage: figma.currentPage.name
   })
+  // return styles
+  return stylesById
+}
+
+const runPlugin = async () => {
+  // await figma.currentPage.loadAsync();
+  // get all nodes in current page with style
+  let stylesById = await reloadUi(figma)
 
   figma.ui.onmessage = async (msg: { type: string, data: unknown }) => {
     // One way of distinguishing between different types of messages sent from
@@ -72,45 +71,23 @@ const runPlugin = async () => {
       for (const key in data) {
         setSetting(figma, key as SettingKey, data[key])
       }
-      // update settings
-      settings = {
-        ...defaultSettings,
-        ...getFromStore(figma, 'SETTINGS')
-      }
 
       if (Object.keys(msg.data).some((key: SettingKey) => refreshOnUpdate.includes(key))) {
-        stylesById = await getStyles(figma, settings);
-        remoteStyles = getSortedStyles(Object.values(stylesById).filter(style => style.remote))
-        localStyles = getSortedStyles(Object.values(stylesById).filter(style => !style.remote))
-        figma.ui.resize(300, calcUiHeight(figma, localStyles.length, remoteStyles.length));
+        stylesById = await reloadUi(figma)
+      } else {
+        stylesById = await reloadUi(figma, stylesById)
       }
 
-      // refresh ui
-      figma.ui.postMessage({
-        remoteStyles,
-        localStyles,
-        settings,
-        currentPage: figma.currentPage.name
-      })
     }
 
     if (msg.type === 'refresh') {
-      stylesById = await getStyles(figma, settings);
-      remoteStyles = getSortedStyles(Object.values(stylesById).filter(style => style.remote))
-      localStyles = getSortedStyles(Object.values(stylesById).filter(style => !style.remote))
-      figma.ui.resize(300, calcUiHeight(figma, localStyles.length, remoteStyles.length));
-      figma.ui.postMessage({
-        remoteStyles,
-        localStyles,
-        settings,
-        currentPage: figma.currentPage.name
-      })
+      stylesById = await reloadUi(figma)
     }
   }
+
+  figma.on('currentpagechange', async () => {
+    stylesById = await reloadUi(figma)
+  })
 }
 
 runPlugin()
-
-figma.on('currentpagechange', () => {
-  runPlugin()
-})

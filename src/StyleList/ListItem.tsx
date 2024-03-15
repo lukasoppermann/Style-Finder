@@ -1,10 +1,10 @@
 import * as React from "react";
 import styles from "./ListItem.module.css";
-import { FigmaStyle } from "../plugin";
 import StyleSvg from "./StyleSvgs";
+import { styleData } from "../utilities/getStyles";
 
 type Props = {
-  style: FigmaStyle;
+  style: styleData;
 };
 
 const ListItem = ({ style: { id, name, type, nodes, description } }: Props) => (
