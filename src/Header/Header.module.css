@@ -7,6 +7,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 8px 8px 8px 16px;
+  height: 32px;
   background-color: var(--figma-color-bg);
   box-shadow: 0 1px 0 0 var(--figma-color-border);
   & > h2 {
@@ -27,5 +28,9 @@
       color: var(--figma-color-text-primary);
       background-color: var(--figma-color-bg-secondary);
     }
+  }
+  & > .HeaderSearch {
+    color: var(--figma-color-text-secondary);
+    fill: currentColor;
   }
 }

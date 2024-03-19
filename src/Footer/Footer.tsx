@@ -14,7 +14,7 @@ const postMessage = (type: string, data?: unknown) => () => {
 const Footer = ({ settings }: Props) => {
   return (
     <section className={styles.Footer}>
-      <div className={styles.FooterRightItems}>
+      <div className={styles.FooterLeftItems}>
         <button
           title={
             settings.SHOW_PAINT ? "Hide color styles" : "Show color styles"
@@ -54,6 +54,15 @@ const Footer = ({ settings }: Props) => {
           })}
         >
           <StyleSvg type="GRID" />
+        </button>
+      </div>
+      <div className={styles.FooterRightItems}>
+        <button
+          data-enabled
+          title="Refetch data from nodes"
+          onClick={postMessage("refresh")}
+        >
+          ↻
         </button>
       </div>
     </section>

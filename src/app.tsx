@@ -39,15 +39,7 @@ const App = () => {
 
   return (
     <main className={styles.app}>
-      <Header
-        onRefresh={() => {
-          setFigmaLocalStyles(null);
-          setFigmaRemoteStyles(null);
-          postMessage("refresh")();
-        }}
-      >
-        {currentPage ? `Styles on ${currentPage}` : "Styles"}
-      </Header>
+      <Header>{currentPage ? `Styles on ${currentPage}` : "Styles"}</Header>
       {figmaLocalStyles === null && figmaRemoteStyles === null ? (
         <div className={styles.loading}>Loading...</div>
       ) : figmaLocalStyles.length === 0 && figmaRemoteStyles.length === 0 ? (
