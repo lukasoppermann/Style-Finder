@@ -8,7 +8,7 @@ figma.showUI(__html__, {
 });
 
 const runPlugin = async () => {
-  // await figma.currentPage.loadAsync();
+  await figma.loadAllPagesAsync();
   // get all nodes in current page with style
   let stylesById
 
