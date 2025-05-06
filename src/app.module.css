@@ -5,7 +5,7 @@ body {
 }
 .app {
   font-family: "Inter", sans-serif;
-  color: var(--figma-color-text-primary);
+  color: var(--figma-color-text);
   height: 100vh;
 }
 .loading {

@@ -26,10 +26,10 @@
     background-color: transparent;
     color: var(--figma-color-text-disabled);
     &[data-enabled] {
-      color: var(--figma-color-text-primary);
+      color: var(--figma-color-text);
     }
     &:hover {
-      color: var(--figma-color-text-primary);
+      color: var(--figma-color-text);
       background-color: rgba(0,0,0,0.05);
     }
     svg {

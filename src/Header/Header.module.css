@@ -24,7 +24,7 @@
     background-color: transparent;
     color: var(--figma-color-text-secondary);
     &:hover {
-      color: var(--figma-color-text-primary);
+      color: var(--figma-color-text);
       background-color: var(--figma-color-bg-secondary);
     }
   }
